@@ -1,6 +1,6 @@
 # cloudflared-config.yml
-tunnel: <YOUR_TUNNEL_ID>
-credentials-file: /etc/cloudflared/credentials.json
+# This file is used for local development/testing
+# For production, use TUNNEL_TOKEN environment variable instead
 
 ingress:
   - hostname: s.duskoide.org

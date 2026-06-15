@@ -17,9 +17,8 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: cloudflared
     command: tunnel run
-    volumes:
-      - ./cloudflared-config.yml:/etc/cloudflared/config.yml:ro
-      - ${HOME}/.cloudflared:/etc/cloudflared:ro
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
     depends_on:
       - linkshortener
     restart: unless-stopped

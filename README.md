@@ -38,38 +38,15 @@ A simple link shortener built with Rust, Axum, and SQLite. Designed for small te
 
 To expose the service publicly via Cloudflare Tunnel:
 
-1. Install `cloudflared` and authenticate:
+1. Go to the Cloudflare dashboard → Zero Trust → Networks → Tunnels
+2. Create a new tunnel and copy the tunnel token
+3. Add `TUNNEL_TOKEN=your-token-here` to your `.env` file
+4. Start the services:
    ```bash
-   cloudflared tunnel login
+   podman-compose up -d
    ```
 
-2. Create a tunnel:
-   ```bash
-   cloudflared tunnel create linkshortener
-   ```
-
-3. Add a DNS record pointing to the tunnel:
-   ```bash
-   cloudflared tunnel route dns linkshortener your-domain.com
-   ```
-
-4. Configure the tunnel with a `config.yml`:
-   ```yaml
-   tunnel: <TUNNEL_ID>
-   credentials-file: /root/.cloudflared/<TUNNEL_ID>.json
-
-   ingress:
-     - hostname: your-domain.com
-       service: http://localhost:8081
-     - service: http_status:404
-   ```
-
-5. Run the tunnel:
-   ```bash
-   cloudflared tunnel run linkshortener
-   ```
-
-For persistent setup, create a systemd service for `cloudflared`.
+The tunnel will automatically route traffic from `s.duskoide.org` to the link shortener.
 
 ### Systemd Service
 
