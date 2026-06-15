@@ -1,7 +1,7 @@
 use axum::{
     extract::FromRequestParts,
     http::{request::Parts, StatusCode},
-    response::{IntoResponse, Redirect, Response},
+    response::Redirect,
 };
 use axum_extra::extract::cookie::CookieJar;
 use bcrypt::{hash, verify, DEFAULT_COST};
@@ -52,7 +52,8 @@ where
     type Rejection = (StatusCode, Redirect);
 
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
-        let jar = CookieJar::from_request_parts(parts, _state).await.unwrap();
+        let jar = CookieJar::from_request_parts(parts, _state).await
+            .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, Redirect::to("/login")))?;
 
         let session_token = jar.get("session").map(|c| c.value().to_string());
 
