@@ -2,10 +2,11 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
     response::{Html, IntoResponse, Redirect},
-    Form,
+    Form, Json,
 };
 use axum_extra::extract::cookie::{Cookie, CookieJar};
 use serde::{Deserialize, Serialize};
+use serde_json;
 use sqlx::{FromRow, SqlitePool};
 use tera::Tera;
 
@@ -79,15 +80,21 @@ pub async fn login_post(
 pub async fn dashboard(
     _auth: AuthSession,
     State(state): State<AppState>,
-) -> Html<String> {
+) -> Result<Html<String>, (StatusCode, Html<String>)> {
     let links: Vec<Link> = sqlx::query_as::<_, Link>("SELECT id, short_code, original_url, created_at, click_count FROM links ORDER BY created_at DESC")
         .fetch_all(&state.pool)
         .await
-        .unwrap_or_default();
+        .map_err(|e| {
+            tracing::error!("Failed to fetch links: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Html(state.tera.render("error.html", &tera::Context::new()).unwrap_or_else(|_| "<h1>Internal Server Error</h1>".to_string())),
+            )
+        })?;
 
     let mut context = tera::Context::new();
     context.insert("links", &links);
-    Html(state.tera.render("dashboard.html", &context).unwrap())
+    Ok(Html(state.tera.render("dashboard.html", &context).unwrap()))
 }
 
 pub async fn create_page(
@@ -168,13 +175,19 @@ pub async fn redirect_handler(
 pub async fn api_links(
     _auth: AuthSession,
     State(state): State<AppState>,
-) -> impl IntoResponse {
+) -> Result<axum::Json<Vec<Link>>, (StatusCode, axum::Json<serde_json::Value>)> {
     let links: Vec<Link> = sqlx::query_as::<_, Link>("SELECT id, short_code, original_url, created_at, click_count FROM links ORDER BY created_at DESC")
         .fetch_all(&state.pool)
         .await
-        .unwrap_or_default();
+        .map_err(|e| {
+            tracing::error!("Failed to fetch links: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                axum::Json(serde_json::json!({"error": "Failed to fetch links"})),
+            )
+        })?;
 
-    axum::Json(links)
+    Ok(axum::Json(links))
 }
 
 pub async fn api_delete_link(
