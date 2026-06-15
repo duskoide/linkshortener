@@ -23,7 +23,7 @@
         <tbody>
             {% for link in links %}
             <tr>
-                <td><a href="/{{ link.short_code }}" target="_blank">{{ link.short_code }}</a></td>
+                <td><a href="/{{ link.short_code }}" target="_blank" rel="noopener noreferrer">{{ link.short_code }}</a></td>
                 <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ link.original_url }}</td>
                 <td>{{ link.click_count }}</td>
                 <td>{{ link.created_at }}</td>
