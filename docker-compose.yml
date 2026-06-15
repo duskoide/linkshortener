@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  linkshortener:
+    build: .
+    container_name: linkshortener
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./data:/data
+    environment:
+      - DATABASE_URL=sqlite:/data/links.db
+      - LISTEN_ADDR=0.0.0.0:8081
+      - SESSION_SECRET=${SESSION_SECRET:-change-me-to-random-string}
+    restart: unless-stopped
