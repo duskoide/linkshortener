@@ -34,6 +34,43 @@ A simple link shortener built with Rust, Axum, and SQLite. Designed for small te
 
 3. Access at `http://your-server:8081`
 
+#### Cloudflare Tunnel
+
+To expose the service publicly via Cloudflare Tunnel:
+
+1. Install `cloudflared` and authenticate:
+   ```bash
+   cloudflared tunnel login
+   ```
+
+2. Create a tunnel:
+   ```bash
+   cloudflared tunnel create linkshortener
+   ```
+
+3. Add a DNS record pointing to the tunnel:
+   ```bash
+   cloudflared tunnel route dns linkshortener your-domain.com
+   ```
+
+4. Configure the tunnel with a `config.yml`:
+   ```yaml
+   tunnel: <TUNNEL_ID>
+   credentials-file: /root/.cloudflared/<TUNNEL_ID>.json
+
+   ingress:
+     - hostname: your-domain.com
+       service: http://localhost:8081
+     - service: http_status:404
+   ```
+
+5. Run the tunnel:
+   ```bash
+   cloudflared tunnel run linkshortener
+   ```
+
+For persistent setup, create a systemd service for `cloudflared`.
+
 ### Systemd Service
 
 1. Copy the service file:
@@ -57,7 +94,7 @@ Environment variables:
 
 ## First Run
 
-On first run, the system will prompt you to set a password. This password is used to access the dashboard and create links.
+On first use, enter your desired password on the login page — it will be stored for future logins. This password is used to access the dashboard and create links.
 
 ## API Endpoints
 
