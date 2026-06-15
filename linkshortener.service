@@ -6,10 +6,13 @@ After=network.target
 Type=simple
 User=pn
 WorkingDirectory=/home/pn/linkshortener
+EnvironmentFile=-/home/pn/linkshortener/.env
 ExecStart=/usr/bin/podman-compose up
 ExecStop=/usr/bin/podman-compose down
 Restart=always
 RestartSec=10
+TimeoutStopSec=30
+RestartPreventExitStatus=0
 
 [Install]
 WantedBy=multi-user.target
