@@ -11,5 +11,17 @@ services:
     environment:
       - DATABASE_URL=sqlite:/data/links.db
       - LISTEN_ADDR=0.0.0.0:8081
+      - BASE_URL=https://s.duskoide.org
       - SESSION_SECRET=${SESSION_SECRET:-change-me-to-random-string}
+    restart: unless-stopped
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    command: tunnel run
+    volumes:
+      - ./cloudflared-config.yml:/etc/cloudflared/config.yml:ro
+      - ${HOME}/.cloudflared:/etc/cloudflared:ro
+    depends_on:
+      - linkshortener
     restart: unless-stopped
