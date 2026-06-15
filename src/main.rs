@@ -1,6 +1,10 @@
+mod config;
 mod db;
+
+use config::Config;
 
 #[tokio::main]
 async fn main() {
-    println!("Link shortener starting...");
+    let config = Config::from_env();
+    println!("Link shortener starting on {}", config.listen_addr);
 }
