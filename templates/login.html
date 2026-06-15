@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Link Shortener{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Login</h2>
+    <p>Enter the password to access the link shortener.</p>
+    
+    {% if error %}
+    <div class="error">{{ error }}</div>
+    {% endif %}
+    
+    <form method="POST" action="/login">
+        <input type="password" name="password" placeholder="Password" required autofocus>
+        <button type="submit" class="btn">Login</button>
+    </form>
+</div>
+{% endblock %}
