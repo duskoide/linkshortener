@@ -9,8 +9,9 @@
     {{end}}
 
     <form method="POST" action="/create">
-        <input type="url" name="url" placeholder="https://example.com/long-url" required>
-        <input type="text" name="custom_code" placeholder="Custom short code (optional)">
+        <input type="url" name="url" placeholder="https://example.com/your-very-long-url-here" required>
+        <input type="text" name="custom_code" placeholder="Custom short code (e.g. mylink)">
+        <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">Short link will be: <strong>s.duskoide.org/<em>{code}</em></strong></p>
         <button type="submit" class="btn">Create Link</button>
     </form>
 </div>
