@@ -1,25 +1,17 @@
-{% extends "base.html" %}
+{{define "title"}}Create Link - Link Shortener{{end}}
 
-{% block title %}Create Link - Link Shortener{% endblock %}
-
-{% block content %}
+{{define "content"}}
 <div class="card">
     <h2>Create New Link</h2>
-    
-    {% if error %}
-    <div class="error">{{ error }}</div>
-    {% endif %}
-    
-    {% if success %}
-    <div class="success">
-        Link created! Short URL: <a href="/{{ short_code }}">{{ short_code }}</a>
-    </div>
-    {% endif %}
-    
+
+    {{if .Error}}
+    <div class="error">{{.Error}}</div>
+    {{end}}
+
     <form method="POST" action="/create">
         <input type="url" name="url" placeholder="https://example.com/long-url" required>
         <input type="text" name="custom_code" placeholder="Custom short code (optional)">
         <button type="submit" class="btn">Create Link</button>
     </form>
 </div>
-{% endblock %}
+{{end}}

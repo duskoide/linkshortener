@@ -1,15 +1,13 @@
-{% extends "base.html" %}
+{{define "title"}}Dashboard - Link Shortener{{end}}
 
-{% block title %}Dashboard - Link Shortener{% endblock %}
-
-{% block content %}
+{{define "content"}}
 <div class="card">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
         <h2>Your Links</h2>
         <a href="/create" class="btn">Create New Link</a>
     </div>
-    
-    {% if links %}
+
+    {{if .Links}}
     <table>
         <thead>
             <tr>
@@ -21,22 +19,22 @@
             </tr>
         </thead>
         <tbody>
-            {% for link in links %}
+            {{range .Links}}
             <tr>
-                <td><a href="/{{ link.short_code }}" target="_blank" rel="noopener noreferrer">{{ link.short_code }}</a></td>
-                <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ link.original_url }}</td>
-                <td>{{ link.click_count }}</td>
-                <td>{{ link.created_at }}</td>
+                <td><a href="/{{.ShortCode}}" target="_blank" rel="noopener noreferrer">{{.ShortCode}}</a></td>
+                <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{.OriginalURL}}</td>
+                <td>{{.ClickCount}}</td>
+                <td>{{.CreatedAt}}</td>
                 <td class="actions">
-                    <button class="btn btn-danger" onclick="deleteLink({{ link.id }})">Delete</button>
+                    <button class="btn btn-danger" onclick="deleteLink({{.ID}})">Delete</button>
                 </td>
             </tr>
-            {% endfor %}
+            {{end}}
         </tbody>
     </table>
-    {% else %}
+    {{else}}
     <p>No links yet. <a href="/create">Create your first link</a>.</p>
-    {% endif %}
+    {{end}}
 </div>
 
 <script>
@@ -47,4 +45,4 @@ async function deleteLink(id) {
     }
 }
 </script>
-{% endblock %}
+{{end}}

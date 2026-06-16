@@ -1,11 +1,9 @@
-{% extends "base.html" %}
+{{define "title"}}Not Found - Link Shortener{{end}}
 
-{% block title %}Not Found - Link Shortener{% endblock %}
-
-{% block content %}
+{{define "content"}}
 <div class="card">
     <h2>Link Not Found</h2>
     <p>The short link you're looking for doesn't exist or has been removed.</p>
     <p><a href="/" class="btn">Go to Dashboard</a></p>
 </div>
-{% endblock %}
+{{end}}
