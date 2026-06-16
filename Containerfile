@@ -1,27 +1,19 @@
 # Build stage
-FROM rust:1.96 as builder
-
-RUN apt-get update && apt-get install -y musl-tools
-RUN rustup target add x86_64-unknown-linux-musl
-
+FROM golang:1.22-alpine AS builder
 WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
 COPY . .
-RUN cargo build --release --target x86_64-unknown-linux-musl
+RUN CGO_ENABLED=0 go build -o /linkshortener ./cmd/linkshortener
 
 # Runtime stage
 FROM alpine:3.19
-
 RUN apk add --no-cache ca-certificates
-
 WORKDIR /app
-COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/linkshortener .
+COPY --from=builder /linkshortener .
 COPY templates/ templates/
-
 RUN mkdir -p /data
-
 EXPOSE 8081
-
 ENV DATABASE_URL=sqlite:/data/links.db
 ENV LISTEN_ADDR=0.0.0.0:8081
-
 CMD ["./linkshortener"]
