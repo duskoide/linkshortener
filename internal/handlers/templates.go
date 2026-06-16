@@ -6,17 +6,23 @@ import (
 	"path/filepath"
 )
 
-var templates *template.Template
+var templates = map[string]*template.Template{}
 
 func InitTemplates(templateDir string) error {
-	var err error
-	templates, err = template.ParseGlob(filepath.Join(templateDir, "*.html"))
-	if err != nil {
-		return err
+	pages := []string{"login.html", "dashboard.html", "create.html", "404.html"}
+	for _, page := range pages {
+		t, err := template.ParseFiles(
+			filepath.Join(templateDir, "base.html"),
+			filepath.Join(templateDir, page),
+		)
+		if err != nil {
+			return err
+		}
+		templates[page] = t
 	}
 	return nil
 }
 
-func renderTemplate(w http.ResponseWriter, name string, data any) error {
-	return templates.ExecuteTemplate(w, name, data)
+func renderTemplate(w http.ResponseWriter, page string, data any) error {
+	return templates[page].ExecuteTemplate(w, "base.html", data)
 }

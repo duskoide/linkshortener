@@ -16,7 +16,7 @@ func Dashboard(database *sql.DB) http.HandlerFunc {
 		}
 
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		templates.ExecuteTemplate(w, "dashboard.html", map[string]any{
+		renderTemplate(w, "dashboard.html", map[string]any{
 			"Links": links,
 		})
 	}

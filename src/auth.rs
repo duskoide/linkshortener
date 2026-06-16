@@ -6,6 +6,7 @@ use axum::{
 use axum_extra::extract::cookie::CookieJar;
 use bcrypt::{hash, verify, DEFAULT_COST};
 use rand::Rng;
+use sqlx::SqlitePool;
 
 #[derive(Clone)]
 pub struct AuthSession {
@@ -51,16 +52,30 @@ where
 {
     type Rejection = (StatusCode, Redirect);
 
-    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
-        let jar = CookieJar::from_request_parts(parts, _state).await
+    async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
+        let jar = CookieJar::from_request_parts(parts, state).await
             .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, Redirect::to("/login")))?;
 
         let session_token = jar.get("session").map(|c| c.value().to_string());
 
-        if let Some(_token) = session_token {
-            Ok(AuthSession {
-                is_authenticated: true,
-            })
+        if let Some(token) = session_token {
+            // Try to extract pool from state using trait bounds
+            // Since we can't directly access AppState here, we'll use a different approach
+            // We need to use axum's state extraction
+            let pool = parts.extensions.get::<SqlitePool>()
+                .ok_or((StatusCode::INTERNAL_SERVER_ERROR, Redirect::to("/login")))?;
+            
+            // Validate token against database
+            let is_valid = crate::db::validate_session(pool, &token).await
+                .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, Redirect::to("/login")))?;
+            
+            if is_valid {
+                Ok(AuthSession {
+                    is_authenticated: true,
+                })
+            } else {
+                Err((StatusCode::UNAUTHORIZED, Redirect::to("/login")))
+            }
         } else {
             Err((StatusCode::UNAUTHORIZED, Redirect::to("/login")))
         }

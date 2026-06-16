@@ -10,12 +10,9 @@ use serde_json;
 use sqlx::{FromRow, SqlitePool};
 use tera::Tera;
 
-use crate::auth::{hash_password, verify_password, AuthSession};
-use crate::config::Config;
-
+use crate::auth::{hash_password, verify_password, AuthSession, generate_session_token};
 #[derive(Clone)]
 pub struct AppState {
-    pub config: Config,
     pub pool: SqlitePool,
     pub tera: Tera,
 }
@@ -64,7 +61,18 @@ pub async fn login_post(
     };
 
     if verify_password(&form.password, &hash).await.unwrap() {
-        let cookie = Cookie::build(("session", state.config.session_secret.clone()))
+        let session_token = generate_session_token();
+        
+        // Store session in database (expires in 24 hours)
+        if let Err(e) = crate::db::create_session(&state.pool, &session_token, 24).await {
+            tracing::error!("Failed to create session: {}", e);
+            return Err((
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Html(state.tera.render("error.html", &tera::Context::new()).unwrap_or_else(|_| "<h1>Internal Server Error</h1>".to_string())),
+            ));
+        }
+
+        let cookie = Cookie::build(("session", session_token))
             .path("/")
             .http_only(true)
             .build();
@@ -75,6 +83,30 @@ pub async fn login_post(
         context.insert("error", "Invalid password");
         Err((StatusCode::UNAUTHORIZED, Html(state.tera.render("login.html", &context).unwrap())))
     }
+}
+
+pub async fn logout(
+    State(state): State<AppState>,
+    jar: CookieJar,
+) -> Result<(CookieJar, Redirect), (StatusCode, Html<String>)> {
+    // Get the session token from cookie
+    let session_token = jar.get("session").map(|c| c.value().to_string());
+    
+    if let Some(token) = session_token {
+        // Delete session from database
+        if let Err(e) = crate::db::delete_session(&state.pool, &token).await {
+            tracing::error!("Failed to delete session: {}", e);
+        }
+    }
+
+    // Remove the cookie
+    let cookie = Cookie::build("session")
+        .path("/")
+        .http_only(true)
+        .max_age(time::Duration::ZERO)
+        .build();
+
+    Ok((jar.remove(cookie), Redirect::to("/login")))
 }
 
 pub async fn dashboard(

@@ -10,7 +10,7 @@ import (
 
 func LoginPage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.ExecuteTemplate(w, "login.html", nil)
+	renderTemplate(w, "login.html", nil)
 }
 
 func LoginPost(database *sql.DB) http.HandlerFunc {
@@ -44,7 +44,7 @@ func LoginPost(database *sql.DB) http.HandlerFunc {
 
 		if !auth.VerifyPassword(password, storedHash) {
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
-			templates.ExecuteTemplate(w, "login.html", map[string]any{
+			renderTemplate(w, "login.html", map[string]any{
 				"Error": "Invalid password",
 			})
 			return
@@ -62,6 +62,7 @@ func LoginPost(database *sql.DB) http.HandlerFunc {
 			Value:    token,
 			Path:     "/",
 			HttpOnly: true,
+			SameSite: http.SameSiteLaxMode,
 		})
 
 		http.Redirect(w, r, "/dashboard", http.StatusFound)

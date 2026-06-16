@@ -16,7 +16,7 @@ func Redirect(database *sql.DB) http.HandlerFunc {
 		link, err := db.GetLinkByShortCode(database, shortCode)
 		if err == sql.ErrNoRows {
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
-			templates.ExecuteTemplate(w, "404.html", nil)
+			renderTemplate(w, "404.html", nil)
 			return
 		}
 		if err != nil {

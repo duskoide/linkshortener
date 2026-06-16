@@ -11,7 +11,7 @@ import (
 
 func CreatePage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.ExecuteTemplate(w, "create.html", nil)
+	renderTemplate(w, "create.html", nil)
 }
 
 func CreatePost(database *sql.DB) http.HandlerFunc {
@@ -31,7 +31,7 @@ func CreatePost(database *sql.DB) http.HandlerFunc {
 
 		if len(shortCode) < 3 || len(shortCode) > 20 {
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
-			templates.ExecuteTemplate(w, "create.html", map[string]any{
+			renderTemplate(w, "create.html", map[string]any{
 				"Error": "Short code must be 3-20 characters",
 			})
 			return
@@ -40,7 +40,7 @@ func CreatePost(database *sql.DB) http.HandlerFunc {
 		for _, c := range shortCode {
 			if !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
 				w.Header().Set("Content-Type", "text/html; charset=utf-8")
-				templates.ExecuteTemplate(w, "create.html", map[string]any{
+				renderTemplate(w, "create.html", map[string]any{
 					"Error": "Short code must be alphanumeric",
 				})
 				return
@@ -49,7 +49,7 @@ func CreatePost(database *sql.DB) http.HandlerFunc {
 
 		if !strings.HasPrefix(url, "http://") && !strings.HasPrefix(url, "https://") {
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
-			templates.ExecuteTemplate(w, "create.html", map[string]any{
+			renderTemplate(w, "create.html", map[string]any{
 				"Error": "URL must start with http:// or https://",
 			})
 			return
@@ -57,7 +57,7 @@ func CreatePost(database *sql.DB) http.HandlerFunc {
 
 		if err := db.CreateLink(database, shortCode, url); err != nil {
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
-			templates.ExecuteTemplate(w, "create.html", map[string]any{
+			renderTemplate(w, "create.html", map[string]any{
 				"Error": "Short code already exists",
 			})
 			return
