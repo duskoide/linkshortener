@@ -1,36 +1,36 @@
 # Link Shortener
 
-Rust link shortener: Axum + SQLite + Tera templates. Designed for single-team/homeserver use.
+Go link shortener: Chi + SQLite + html/template. Designed for single-team/homeserver use.
 
 ## Quick Reference
 
 ```bash
-cargo run                          # local dev (serves on :8081)
-cargo build --release              # release build
-cargo test                         # run tests
-cargo clippy                       # lint (no custom config)
-cargo fmt                          # format
+go run ./cmd/linkshortener          # local dev (serves on :8081)
+go build -o linkshortener ./cmd/linkshortener  # build binary
+go build ./...                      # verify compilation
 ```
 
 ## Architecture
 
-- **Single crate**, no workspace. Entry: `src/main.rs`.
-- **Modules**: `config` (env loading), `db` (sqlite/sqlx), `routes` (handlers), `auth` (session extraction).
-- **Templates**: Tera, loaded from `templates/` relative to CWD. Binary must run from project root.
-- **Database**: SQLite via sqlx. Migrations in `migrations/` are run in code (`db.rs`), not via `sqlx migrate`.
+- **Single module**, no workspace. Entry: `cmd/linkshortener/main.go`.
+- **Packages**: `internal/config` (env loading), `internal/db` (sqlite queries), `internal/handlers` (route handlers + templates), `internal/auth` (middleware + password utils).
+- **Templates**: html/template, loaded per-page with `base.html` as layout. Binary must run from project root.
+- **Database**: SQLite via `modernc.org/sqlite` (pure Go, no CGO). Migrations in `internal/db/migrations/` embedded via `//go:embed`.
 - **Auth**: Cookie-based sessions stored in DB. Password bcrypt-hashed, stored in `settings` table. First login sets the password.
+- **Router**: Chi v5 with Logger + Recoverer middleware. Protected routes use auth middleware group.
 
 ## Deployment
 
-- **Container**: `Containerfile` (not Dockerfile). Builds musl binary for Alpine.
+- **Container**: `Containerfile`. Multi-stage build: golang alpine → alpine runtime. No CGO.
 - **Runtime**: Uses `podman-compose`, not `docker-compose`. The systemd service (`linkshortener.service`) calls `podman-compose`.
 - **Compose services**: `linkshortener` (app) + `cloudflared` (Cloudflare Tunnel).
 - **Env**: Copy `.env.example` to `.env`. Key vars: `DATABASE_URL`, `LISTEN_ADDR`, `SESSION_SECRET`, `TUNNEL_TOKEN`.
 
 ## Gotchas
 
-- No `sqlx` compile-time query checking. Queries are runtime; schema changes won't cause compile errors.
 - Templates path is hardcoded relative to CWD — always run from project root.
-- `AuthSession` extractor pulls `SqlitePool` from request extensions (`Extension(pool)` layer in main.rs), not from `AppState`. Both exist; `AppState` is for handlers that also need Tera.
-- Integration tests are minimal (`tests/integration_test.rs`). No unit tests exist.
-- No CI, no pre-commit hooks, no linting beyond `clippy`.
+- `renderTemplate()` in `internal/handlers/templates.go` parses base.html + page as a set. Don't use `template.ParseGlob` — it causes `{{define}}` conflicts.
+- `go.mod` uses `go 1.22`. Keep in sync with `Containerfile` golang version.
+- `SESSION_SECRET` and `TUNNEL_TOKEN` are loaded but not yet used — placeholders for future cookie signing / tunnel config.
+- `CleanupExpiredSessions` exists but is never called. Sessions accumulate until manually cleaned.
+- No tests exist. No CI, no pre-commit hooks.
