@@ -11,6 +11,7 @@ type Config struct {
 	ListenAddr    string
 	SessionSecret string
 	TunnelToken   string
+	BaseURL       string
 }
 
 func Load() *Config {
@@ -21,6 +22,7 @@ func Load() *Config {
 		ListenAddr:    getEnv("LISTEN_ADDR", "0.0.0.0:8081"),
 		SessionSecret: getEnv("SESSION_SECRET", ""),
 		TunnelToken:   getEnv("TUNNEL_TOKEN", ""),
+		BaseURL:       getEnv("BASE_URL", ""),
 	}
 }
 
