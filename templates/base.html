@@ -1,43 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{template "title" .}}</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; }
-        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
-        header { background: #2c3e50; color: white; padding: 1rem 0; margin-bottom: 2rem; }
-        .nav { display: flex; justify-content: space-between; align-items: center; }
-        .nav a { color: white; text-decoration: none; margin-left: 1rem; }
-        .nav a:hover { text-decoration: underline; }
-        .card { background: white; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .btn { display: inline-block; background: #3498db; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; }
-        .btn:hover { background: #2980b9; }
-        .btn-danger { background: #e74c3c; }
-        .btn-danger:hover { background: #c0392b; }
-        input, textarea { width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; }
-        .error { background: #fee; color: #c0392b; padding: 1rem; border-radius: 4px; margin-bottom: 1rem; }
-        .success { background: #efe; color: #27ae60; padding: 1rem; border-radius: 4px; margin-bottom: 1rem; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background: #f8f9fa; }
-        .actions { display: flex; gap: 0.5rem; }
-    </style>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{{template "title" .}}</title>
+	<link rel="stylesheet" href="/static/app.css">
 </head>
 <body>
-    <header>
-        <div class="container nav">
-            <a href="/" style="font-size: 1.25rem; font-weight: bold;">Link Shortener</a>
-            <nav>
-                <a href="/dashboard">Dashboard</a>
-                <a href="/create">Create Link</a>
-            </nav>
-        </div>
-    </header>
-    <main class="container">
-        {{template "content" .}}
-    </main>
+	<input type="checkbox" id="nav-toggle" class="nav-toggle">
+	<div class="nav-backdrop" onclick="document.getElementById('nav-toggle').checked=false"></div>
+	<nav class="nav-sheet">
+		<div class="nav-sheet-label">~ navigate</div>
+		{{template "nav" .}}
+		<form name="logout-form" method="POST" action="/logout" style="display:none"></form>
+	</nav>
+
+	<header class="topbar">
+		<div class="topbar-inner">
+			<div style="display:flex;align-items:center;gap:10px;">
+				<label for="nav-toggle" class="hamburger">&#9776;</label>
+				<a href="/" class="wordmark">&#9181; link-shortener</a>
+				<span class="breadcrumb">{{template "breadcrumb" .}}</span>
+			</div>
+			<nav class="nav-desktop">{{template "nav" .}}</nav>
+		</div>
+	</header>
+
+	<main class="container">
+		{{template "content" .}}
+	</main>
+
+	<div class="toast-container" id="toast-container"></div>
+	<script src="/static/app.js" defer></script>
 </body>
 </html>
