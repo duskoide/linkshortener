@@ -53,6 +53,8 @@ func main() {
 		r.Delete("/api/links/{id}", handlers.APIDeleteLink(database))
 	})
 
+	r.NotFound(handlers.NotFound)
+
 	slog.Info("link shortener listening", "addr", cfg.ListenAddr)
 	if err := http.ListenAndServe(cfg.ListenAddr, r); err != nil {
 		slog.Error("server failed", "error", err)
