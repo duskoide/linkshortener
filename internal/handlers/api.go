@@ -41,3 +41,36 @@ func APIDeleteLink(database *sql.DB) http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 	}
 }
+
+func APIBulkDeleteLink(database *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req struct {
+			IDs []int64 `json:"ids"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, `{"error":"Invalid JSON"}`, http.StatusBadRequest)
+			return
+		}
+
+		if len(req.IDs) == 0 {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(`{"deleted":0}`))
+			return
+		}
+
+		if len(req.IDs) > 1000 {
+			http.Error(w, `{"error":"Too many IDs (max 1000)"}`, http.StatusBadRequest)
+			return
+		}
+
+		if err := db.DeleteLinks(database, req.IDs); err != nil {
+			http.Error(w, `{"error":"Failed to delete"}`, http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"deleted":` + strconv.FormatInt(int64(len(req.IDs)), 10) + `}`))
+	}
+}
