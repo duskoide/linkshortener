@@ -14,6 +14,6 @@ COPY --from=builder /linkshortener .
 COPY templates/ templates/
 RUN mkdir -p /data
 EXPOSE 8081
-ENV DATABASE_URL=sqlite:/data/links.db
+ENV DATABASE_URL=/data/links.db
 ENV LISTEN_ADDR=0.0.0.0:8081
 CMD ["./linkshortener"]
