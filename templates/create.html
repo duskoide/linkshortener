@@ -1,18 +1,24 @@
 {{define "title"}}Create Link - Link Shortener{{end}}
+{{define "breadcrumb"}}~ /create{{end}}
+{{define "nav"}}
+	<a href="/dashboard">dashboard</a>
+	<a href="/create" class="active">create</a>
+	<a href="/logout" onclick="event.preventDefault();document.forms['logout-form'].submit()">logout</a>
+{{end}}
 
 {{define "content"}}
-<div class="card">
-    <h2>Create New Link</h2>
+<div class="card center-card">
+	<h2>~ create link</h2>
 
-    {{if .Error}}
-    <div class="error">{{.Error}}</div>
-    {{end}}
+	{{if .Error}}
+	<div class="error">{{.Error}}</div>
+	{{end}}
 
-    <form method="POST" action="/create">
-        <input type="url" name="url" placeholder="https://example.com/your-very-long-url-here" required>
-        <input type="text" name="custom_code" id="custom_code" placeholder="Custom short code (e.g. mylink)" oninput="document.getElementById('preview').textContent = this.value || '{code}'">
-        <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">Short link will be: <strong>s.duskoide.org/<em id="preview">{code}</em></strong></p>
-        <button type="submit" class="btn">Create Link</button>
-    </form>
+	<form method="POST" action="/create">
+		<input type="url" name="url" placeholder="https://example.com/your-very-long-url-here" required>
+		<input type="text" name="custom_code" id="custom_code" placeholder="custom code (optional)" oninput="document.getElementById('preview').textContent = this.value || 'code'">
+		<div class="hint" style="text-align:left;margin-bottom:10px;">&rarr; s.duskoide.org/<em id="preview" style="color:var(--code-color);font-style:normal;">code</em></div>
+		<button type="submit" class="btn">shorten &rarr;</button>
+	</form>
 </div>
 {{end}}

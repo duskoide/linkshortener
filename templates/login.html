@@ -1,17 +1,19 @@
 {{define "title"}}Login - Link Shortener{{end}}
+{{define "breadcrumb"}}~ /login{{end}}
+{{define "nav"}}{{end}}
 
 {{define "content"}}
-<div class="card">
-    <h2>Login</h2>
-    <p>Enter the password to access the link shortener.</p>
+<div class="card center-card">
+	<h2>~ login</h2>
 
-    {{if .Error}}
-    <div class="error">{{.Error}}</div>
-    {{end}}
+	{{if .Error}}
+	<div class="error">{{.Error}}</div>
+	{{end}}
 
-    <form method="POST" action="/login">
-        <input type="password" name="password" placeholder="Password" required autofocus>
-        <button type="submit" class="btn">Login</button>
-    </form>
+	<form method="POST" action="/login">
+		<input type="password" name="password" placeholder="password" required autofocus>
+		<button type="submit" class="btn">enter &rarr;</button>
+	</form>
+	<div class="hint">first login sets the password</div>
 </div>
 {{end}}

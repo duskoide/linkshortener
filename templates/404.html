@@ -1,9 +1,11 @@
 {{define "title"}}Not Found - Link Shortener{{end}}
+{{define "breadcrumb"}}~ /404{{end}}
+{{define "nav"}}{{end}}
 
 {{define "content"}}
-<div class="card">
-    <h2>Link Not Found</h2>
-    <p>The short link you're looking for doesn't exist or has been removed.</p>
-    <p><a href="/" class="btn">Go to Dashboard</a></p>
+<div class="notfound">
+	<div class="notfound-code">404</div>
+	<div class="notfound-msg">~ link not found</div>
+	<a href="/" class="btn btn-outline">&larr; back to dashboard</a>
 </div>
 {{end}}
