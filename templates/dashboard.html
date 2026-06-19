@@ -38,10 +38,10 @@
 			<div class="cell-clk">{{.ClickCount}}&#8599;</div>
 			<div class="cell-created">{{.CreatedAt.Format "Jan 02"}}</div>
 			<div class="cell-actions">
-				<button class="icon-btn" data-action="copy">&#8853;</button>
-				<button class="icon-btn" data-action="qr">&#9638;</button>
-				<button class="icon-btn" data-action="edit">&#9998;</button>
-				<button class="icon-btn danger" data-action="delete">&#10005;</button>
+				<button class="icon-btn" data-action="copy" title="copy short url">&#8853;</button>
+				<button class="icon-btn" data-action="qr" title="show qr code">&#9638;</button>
+				<button class="icon-btn" data-action="edit" title="edit link">&#9998;</button>
+				<button class="icon-btn danger" data-action="delete" title="delete link">&#10005;</button>
 			</div>
 		</div>
 		{{end}}

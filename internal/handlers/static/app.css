@@ -23,10 +23,6 @@
 	box-sizing: border-box;
 }
 
-html {
-	zoom: 1.25;
-}
-
 body {
 	font-family: var(--font);
 	background: var(--bg-base);
