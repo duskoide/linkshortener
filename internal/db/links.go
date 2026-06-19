@@ -62,3 +62,43 @@ func DeleteLink(db *sql.DB, linkID int64) error {
 	_, err := db.Exec("DELETE FROM links WHERE id = ?", linkID)
 	return err
 }
+
+func GetLinkByID(db *sql.DB, id int64) (*Link, error) {
+	link := &Link{}
+	err := db.QueryRow(
+		"SELECT id, short_code, original_url, created_at, click_count FROM links WHERE id = ?",
+		id,
+	).Scan(&link.ID, &link.ShortCode, &link.OriginalURL, &link.CreatedAt, &link.ClickCount)
+	if err != nil {
+		return nil, err
+	}
+	return link, nil
+}
+
+func UpdateLink(db *sql.DB, linkID int64, shortCode, originalURL string) error {
+	_, err := db.Exec(
+		"UPDATE links SET short_code = ?, original_url = ? WHERE id = ?",
+		shortCode, originalURL, linkID,
+	)
+	return err
+}
+
+func DeleteLinks(db *sql.DB, ids []int64) error {
+	if len(ids) == 0 {
+		return nil
+	}
+
+	placeholders := ""
+	args := make([]any, 0, len(ids))
+	for i, id := range ids {
+		if i > 0 {
+			placeholders += ","
+		}
+		placeholders += "?"
+		args = append(args, id)
+	}
+
+	query := "DELETE FROM links WHERE id IN (" + placeholders + ")"
+	_, err := db.Exec(query, args...)
+	return err
+}
