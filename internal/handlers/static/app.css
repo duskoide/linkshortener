@@ -28,7 +28,7 @@ body {
 	background: var(--bg-base);
 	color: var(--text-primary);
 	line-height: 1.5;
-	font-size: 15px;
+	font-size: 19px;
 }
 
 a {
@@ -60,7 +60,7 @@ a:hover {
 .wordmark {
 	color: var(--accent);
 	font-weight: 700;
-	font-size: 17px;
+	font-size: 21px;
 }
 
 .wordmark:hover {
@@ -69,13 +69,13 @@ a:hover {
 
 .breadcrumb {
 	color: var(--text-muted);
-	font-size: 14px;
+	font-size: 18px;
 }
 
 .nav-desktop {
 	display: flex;
 	gap: 14px;
-	font-size: 15px;
+	font-size: 19px;
 }
 
 .nav-desktop a {
@@ -97,7 +97,7 @@ a:hover {
 	display: none;
 	cursor: pointer;
 	color: var(--text-muted);
-	font-size: 22px;
+	font-size: 26px;
 	user-select: none;
 }
 
@@ -128,7 +128,7 @@ a:hover {
 	border-radius: 4px;
 	cursor: pointer;
 	font-family: var(--font);
-	font-size: 15px;
+	font-size: 19px;
 	font-weight: 700;
 	text-decoration: none;
 }
@@ -176,7 +176,7 @@ textarea {
 	border-radius: 4px;
 	color: var(--text-primary);
 	font-family: var(--font);
-	font-size: 15px;
+	font-size: 19px;
 }
 
 input:focus {
@@ -195,7 +195,7 @@ input::placeholder {
 	padding: 10px 14px;
 	border-radius: 4px;
 	margin-bottom: 1rem;
-	font-size: 14px;
+	font-size: 18px;
 }
 
 .toolbar {
@@ -217,13 +217,13 @@ input::placeholder {
 
 .filter-prefix {
 	color: var(--text-muted);
-	font-size: 14px;
+	font-size: 18px;
 }
 
 .filter-input {
 	flex: 1;
 	padding: 5px 9px;
-	font-size: 14px;
+	font-size: 18px;
 }
 
 .toolbar-right {
@@ -234,7 +234,7 @@ input::placeholder {
 
 .selection-count {
 	color: var(--text-muted);
-	font-size: 13px;
+	font-size: 17px;
 	min-width: 70px;
 }
 
@@ -252,7 +252,7 @@ input::placeholder {
 	gap: 10px;
 	padding: 10px 12px;
 	align-items: center;
-	font-size: 14px;
+	font-size: 18px;
 	border-bottom: 1px solid var(--border);
 }
 
@@ -264,7 +264,7 @@ input::placeholder {
 	background: var(--bg-topbar);
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
-	font-size: 11px;
+	font-size: 15px;
 	color: var(--text-muted);
 }
 
@@ -280,7 +280,7 @@ input::placeholder {
 .row.is-editing .cell-code input,
 .row.is-editing .cell-url input {
 	padding: 3px 5px;
-	font-size: 14px;
+	font-size: 18px;
 }
 
 .row.is-deleting {
@@ -314,7 +314,7 @@ input::placeholder {
 
 .cell-created {
 	color: var(--text-muted);
-	font-size: 13px;
+	font-size: 17px;
 }
 
 .cell-actions {
@@ -328,7 +328,7 @@ input::placeholder {
 	border: 1px solid var(--border);
 	border-radius: 3px;
 	padding: 1px 6px;
-	font-size: 13px;
+	font-size: 17px;
 	cursor: pointer;
 	background: transparent;
 	font-family: var(--font);
@@ -359,7 +359,7 @@ input::placeholder {
 
 .table-footer {
 	color: var(--text-muted);
-	font-size: 12px;
+	font-size: 16px;
 	padding: 10px 16px;
 	border-top: 1px solid var(--border);
 }
@@ -368,14 +368,16 @@ input::placeholder {
 	text-align: center;
 	padding: 40px 20px;
 	color: var(--text-muted);
-	font-size: 15px;
+	font-size: 19px;
 }
+
+.empty-state .btn {
 	margin-top: 12px;
 }
 
 .no-match {
 	color: var(--text-muted);
-	font-size: 14px;
+	font-size: 18px;
 	padding: 20px;
 	text-align: center;
 }
@@ -418,7 +420,7 @@ input::placeholder {
 	gap: 8px;
 	padding: 8px 14px;
 	border-radius: 4px;
-	font-size: 14px;
+	font-size: 18px;
 	animation: toast-in 0.2s ease;
 }
 
@@ -462,13 +464,13 @@ input::placeholder {
 
 .center-card h2 {
 	color: var(--text-primary);
-	font-size: 17px;
+	font-size: 21px;
 	margin-bottom: 14px;
 }
 
 .center-card .hint {
 	color: var(--text-muted);
-	font-size: 13px;
+	font-size: 17px;
 	margin-top: 10px;
 	text-align: center;
 }
@@ -489,13 +491,13 @@ input::placeholder {
 
 .notfound-code {
 	color: var(--accent);
-	font-size: 56px;
+	font-size: 60px;
 	font-weight: 700;
 }
 
 .notfound-msg {
 	color: var(--text-muted);
-	font-size: 15px;
+	font-size: 19px;
 	margin: 8px 0 20px;
 }
 
@@ -516,7 +518,7 @@ input::placeholder {
 
 .nav-sheet-label {
 	color: var(--text-muted);
-	font-size: 11px;
+	font-size: 15px;
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
 	margin-bottom: 10px;
@@ -524,7 +526,7 @@ input::placeholder {
 
 .nav-sheet a {
 	color: var(--text-muted);
-	font-size: 15px;
+	font-size: 19px;
 	padding-left: 10px;
 }
 
@@ -602,7 +604,7 @@ input::placeholder {
 	}
 
 	.cell-url {
-		font-size: 13px;
+		font-size: 17px;
 	}
 
 	.cell-actions {
