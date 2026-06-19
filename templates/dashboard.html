@@ -1,48 +1,57 @@
 {{define "title"}}Dashboard - Link Shortener{{end}}
+{{define "breadcrumb"}}~ /dashboard{{end}}
+{{define "nav"}}
+	<a href="/dashboard" class="active">dashboard</a>
+	<a href="/create">create</a>
+	<a href="/logout" onclick="event.preventDefault();document.forms['logout-form'].submit()">logout</a>
+{{end}}
 
 {{define "content"}}
 <div class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-        <h2>Your Links</h2>
-        <a href="/create" class="btn">Create New Link</a>
-    </div>
+	<div class="toolbar">
+		<div class="filter-group">
+			<span class="filter-prefix">$</span>
+			<input type="text" class="filter-input" id="filter" placeholder="filter by code or url...">
+		</div>
+		<div class="toolbar-right">
+			<span class="selection-count" id="selection-count">0 selected</span>
+			<button class="btn btn-outline" id="bulk-delete" disabled>delete selected</button>
+			<a href="/create" class="btn">+ new</a>
+		</div>
+	</div>
 
-    {{if .Links}}
-    <table>
-        <thead>
-            <tr>
-                <th>Short Code</th>
-                <th>Original URL</th>
-                <th>Clicks</th>
-                <th>Created</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{range .Links}}
-            <tr>
-                <td><a href="/{{.ShortCode}}" target="_blank" rel="noopener noreferrer">{{.ShortCode}}</a></td>
-                <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{.OriginalURL}}</td>
-                <td>{{.ClickCount}}</td>
-                <td>{{.CreatedAt}}</td>
-                <td class="actions">
-                    <button class="btn btn-danger" onclick="deleteLink({{.ID}})">Delete</button>
-                </td>
-            </tr>
-            {{end}}
-        </tbody>
-    </table>
-    {{else}}
-    <p>No links yet. <a href="/create">Create your first link</a>.</p>
-    {{end}}
+	{{if .Links}}
+	<div class="table-wrap" data-base-url="{{.BaseURL}}">
+		<div class="row header">
+			<div class="cell-chk"><input type="checkbox" id="select-all"></div>
+			<div class="cell-code">code</div>
+			<div class="cell-url">destination</div>
+			<div class="cell-clk">clicks</div>
+			<div class="cell-created">created</div>
+			<div class="cell-actions" style="text-align:right;">actions</div>
+		</div>
+		{{range .Links}}
+		<div class="row" data-id="{{.ID}}" data-code="{{.ShortCode}}" data-url="{{.OriginalURL}}">
+			<div class="cell-chk"><input type="checkbox" class="row-checkbox"></div>
+			<div class="cell-code"><a href="/{{.ShortCode}}" target="_blank" rel="noopener noreferrer">/{{.ShortCode}}</a></div>
+			<div class="cell-url">{{.OriginalURL}}</div>
+			<div class="cell-clk">{{.ClickCount}}&#8599;</div>
+			<div class="cell-created">{{.CreatedAt.Format "Jan 02"}}</div>
+			<div class="cell-actions">
+				<button class="icon-btn" data-action="copy">&#8853;</button>
+				<button class="icon-btn" data-action="qr">&#9638;</button>
+				<button class="icon-btn" data-action="edit">&#9998;</button>
+				<button class="icon-btn danger" data-action="delete">&#10005;</button>
+			</div>
+		</div>
+		{{end}}
+	</div>
+	<div class="table-footer" id="table-footer">showing {{len .Links}} of {{len .Links}}</div>
+	{{else}}
+	<div class="empty-state">
+		no links yet
+		<br><a href="/create" class="btn">create your first link</a>
+	</div>
+	{{end}}
 </div>
-
-<script>
-async function deleteLink(id) {
-    if (confirm('Are you sure you want to delete this link?')) {
-        await fetch(`/api/links/${id}`, { method: 'DELETE' });
-        location.reload();
-    }
-}
-</script>
 {{end}}
