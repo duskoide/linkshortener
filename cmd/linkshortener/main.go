@@ -36,16 +36,20 @@ func main() {
 	r.Get("/login", handlers.LoginPage)
 	r.Post("/login", handlers.LoginPost(database))
 	r.Post("/logout", handlers.Logout(database))
+	r.Handle("/static/*", handlers.StaticHandler())
 	r.Get("/{shortCode}", handlers.Redirect(database))
 
 	// Protected routes
 	r.Group(func(r chi.Router) {
 		r.Use(auth.Middleware(database))
-		r.Get("/", handlers.Dashboard(database))
-		r.Get("/dashboard", handlers.Dashboard(database))
+		r.Get("/", handlers.Dashboard(database, cfg.BaseURL))
+		r.Get("/dashboard", handlers.Dashboard(database, cfg.BaseURL))
 		r.Get("/create", handlers.CreatePage)
 		r.Post("/create", handlers.CreatePost(database))
 		r.Get("/api/links", handlers.APILinks(database))
+		r.Delete("/api/links/bulk", handlers.APIBulkDeleteLink(database))
+		r.Get("/api/links/{id}/qr", handlers.APIQRCode(database, cfg.BaseURL))
+		r.Patch("/api/links/{id}", handlers.APIEditLink(database))
 		r.Delete("/api/links/{id}", handlers.APIDeleteLink(database))
 	})
 

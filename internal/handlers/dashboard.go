@@ -7,7 +7,7 @@ import (
 	"linkshortener/internal/db"
 )
 
-func Dashboard(database *sql.DB) http.HandlerFunc {
+func Dashboard(database *sql.DB, baseURL string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		links, err := db.GetAllLinks(database)
 		if err != nil {
@@ -17,7 +17,8 @@ func Dashboard(database *sql.DB) http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		renderTemplate(w, "dashboard.html", map[string]any{
-			"Links": links,
+			"Links":   links,
+			"BaseURL": baseURL,
 		})
 	}
 }
