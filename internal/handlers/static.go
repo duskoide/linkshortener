@@ -14,5 +14,8 @@ func StaticHandler() http.Handler {
 	if err != nil {
 		panic(err)
 	}
-	return http.StripPrefix("/static/", http.FileServer(http.FS(sub)))
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-cache, must-revalidate")
+		http.StripPrefix("/static/", http.FileServer(http.FS(sub))).ServeHTTP(w, r)
+	})
 }
