@@ -40,6 +40,11 @@ a:hover {
 	text-decoration: underline;
 }
 
+:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+}
+
 .topbar {
 	background: var(--bg-topbar);
 	border-bottom: 1px solid var(--border);
@@ -118,6 +123,52 @@ a:hover {
 	margin-bottom: 1rem;
 	border: 1px solid var(--border);
 }
+
+.dashboard-card {
+	padding: 1rem;
+}
+
+.summary-grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 10px;
+	margin-bottom: 14px;
+}
+
+.summary-card {
+	min-width: 0;
+	padding: 12px;
+	background: var(--bg-elevated);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+}
+
+.summary-label, .summary-detail {
+	display: block;
+	color: var(--text-muted);
+	font-size: 15px;
+}
+
+.summary-label {
+	text-transform: uppercase;
+	letter-spacing: .05em;
+}
+
+.summary-value {
+	display: block;
+	margin: 3px 0;
+	font-size: 25px;
+	line-height: 1.2;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.summary-clicks { color: var(--clicks-color); }
+.summary-code { color: var(--code-color); }
+.summary-empty { color: var(--text-muted); }
+.recent-links { display: flex; gap: 8px; overflow: hidden; margin: 4px 0; }
+.recent-links a { color: var(--code-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .btn {
 	display: inline-block;
@@ -446,6 +497,12 @@ input::placeholder {
 	cursor: pointer;
 	opacity: 0.6;
 	margin-left: 4px;
+	color: inherit;
+	background: none;
+	border: 0;
+	font: inherit;
+	font-size: 22px;
+	line-height: 1;
 }
 
 .toast-dismiss:hover {
@@ -555,10 +612,34 @@ input::placeholder {
 	display: flex;
 }
 
+@media (prefers-reduced-motion: reduce) {
+	*, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+@media (max-width: 780px) {
+	.summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 @media (max-width: 640px) {
 	.hamburger {
 		display: block;
 	}
+
+	.summary-grid {
+		grid-template-columns: 1fr 1fr;
+		gap: 8px;
+	}
+
+	.summary-card { padding: 10px; }
+	.summary-value { font-size: 21px; }
+	.recent-summary { grid-column: span 2; }
+
+	.toolbar-right {
+		flex-wrap: wrap;
+	}
+
+	.row[hidden] { display: none; }
+
 
 	.nav-desktop {
 		display: none;

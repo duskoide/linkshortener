@@ -7,50 +7,87 @@
 {{end}}
 
 {{define "content"}}
-<div class="card">
+<section class="summary-grid" aria-label="Link summary">
+	<div class="summary-card">
+		<span class="summary-label">links</span>
+		<strong class="summary-value">{{.TotalLinks}}</strong>
+		<span class="summary-detail">{{if eq .TotalLinks 0}}create your first link{{else}}managed shortcuts{{end}}</span>
+	</div>
+	<div class="summary-card">
+		<span class="summary-label">lifetime clicks</span>
+		<strong class="summary-value summary-clicks">{{.LifetimeClicks}}</strong>
+		<span class="summary-detail">{{if eq .LifetimeClicks 0}}waiting for the first visit{{else}}all-time redirects{{end}}</span>
+	</div>
+	<div class="summary-card">
+		<span class="summary-label">top link</span>
+		{{if .TopLink}}
+			<strong class="summary-value summary-code">/{{.TopLink.ShortCode}}</strong>
+			<span class="summary-detail">{{.TopLink.ClickCount}} {{if eq .TopLink.ClickCount 1}}click{{else}}clicks{{end}}</span>
+		{{else}}
+			<strong class="summary-value summary-empty">—</strong>
+			<span class="summary-detail">no links yet</span>
+		{{end}}
+	</div>
+	<div class="summary-card recent-summary">
+		<span class="summary-label">recent</span>
+		{{if .RecentLinks}}
+			<div class="recent-links">
+				{{range .RecentLinks}}<a href="/{{.ShortCode}}" target="_blank" rel="noopener noreferrer">/{{.ShortCode}}</a>{{end}}
+			</div>
+			<span class="summary-detail">{{len .RecentLinks}} newest {{if eq (len .RecentLinks) 1}}link{{else}}links{{end}}</span>
+		{{else}}
+			<strong class="summary-value summary-empty">—</strong>
+			<span class="summary-detail">new links appear here</span>
+		{{end}}
+	</div>
+</section>
+
+<div class="card dashboard-card">
 	<div class="toolbar">
 		<div class="filter-group">
-			<span class="filter-prefix">$</span>
-			<input type="text" class="filter-input" id="filter" placeholder="filter by code or url...">
+			<label class="filter-prefix" for="filter">$</label>
+			<input type="search" class="filter-input" id="filter" placeholder="filter by code or url..." autocomplete="off">
 		</div>
 		<div class="toolbar-right">
-			<span class="selection-count" id="selection-count">0 selected</span>
-			<button class="btn btn-outline" id="bulk-delete" disabled>delete selected</button>
+			<span class="selection-count" id="selection-count" aria-live="polite">0 selected</span>
+			<button type="button" class="btn btn-outline" id="bulk-delete" disabled>delete selected</button>
 			<a href="/create" class="btn">+ new</a>
 		</div>
 	</div>
 
 	{{if .Links}}
 	<div class="table-wrap" data-base-url="{{.BaseURL}}">
-		<div class="row header">
-			<div class="cell-chk"><input type="checkbox" id="select-all"></div>
+		<div class="row header" role="row">
+			<div class="cell-chk"><input type="checkbox" id="select-all" aria-label="Select all visible links"></div>
 			<div class="cell-code">code</div>
 			<div class="cell-url">destination</div>
 			<div class="cell-clk">clicks</div>
 			<div class="cell-created">created</div>
-			<div class="cell-actions" style="text-align:right;">actions</div>
+			<div class="cell-actions">actions</div>
 		</div>
 		{{range .Links}}
 		<div class="row" data-id="{{.ID}}" data-code="{{.ShortCode}}" data-url="{{.OriginalURL}}">
-			<div class="cell-chk"><input type="checkbox" class="row-checkbox"></div>
+			<div class="cell-chk"><input type="checkbox" class="row-checkbox" aria-label="Select /{{.ShortCode}}"></div>
 			<div class="cell-code"><a href="/{{.ShortCode}}" target="_blank" rel="noopener noreferrer">/{{.ShortCode}}</a></div>
 			<div class="cell-url">{{.OriginalURL}}</div>
 			<div class="cell-clk">{{.ClickCount}}&#8599;</div>
 			<div class="cell-created">{{.CreatedAt.Format "Jan 02"}}</div>
 			<div class="cell-actions">
-				<button class="icon-btn" data-action="copy" title="copy short url">&#8853;</button>
-				<button class="icon-btn" data-action="qr" title="show qr code">&#9638;</button>
-				<button class="icon-btn" data-action="edit" title="edit link">&#9998;</button>
-				<button class="icon-btn danger" data-action="delete" title="delete link">&#10005;</button>
+				<button type="button" class="icon-btn" data-action="copy" aria-label="Copy short URL for /{{.ShortCode}}" title="Copy short URL">&#8853;</button>
+				<button type="button" class="icon-btn" data-action="qr" aria-label="Show QR code for /{{.ShortCode}}" title="Show QR code">&#9638;</button>
+				<button type="button" class="icon-btn" data-action="edit" aria-label="Edit /{{.ShortCode}}" title="Edit link">&#9998;</button>
+				<button type="button" class="icon-btn danger" data-action="delete" aria-label="Delete /{{.ShortCode}}" title="Delete link">&#10005;</button>
 			</div>
 		</div>
 		{{end}}
 	</div>
-	<div class="table-footer" id="table-footer">showing {{len .Links}} of {{len .Links}}</div>
+	<div class="table-footer" id="table-footer" aria-live="polite">showing {{len .Links}} of {{len .Links}}</div>
+	<div class="empty-state table-empty-state" id="table-empty-state" hidden>
+		no links yet<br><a href="/create" class="btn">create your first link</a>
+	</div>
 	{{else}}
 	<div class="empty-state">
-		no links yet
-		<br><a href="/create" class="btn">create your first link</a>
+		no links yet<br><a href="/create" class="btn">create your first link</a>
 	</div>
 	{{end}}
 </div>

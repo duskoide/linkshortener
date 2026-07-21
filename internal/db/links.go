@@ -58,9 +58,12 @@ func IncrementClickCount(db *sql.DB, linkID int64) error {
 	return err
 }
 
-func DeleteLink(db *sql.DB, linkID int64) error {
-	_, err := db.Exec("DELETE FROM links WHERE id = ?", linkID)
-	return err
+func DeleteLink(db *sql.DB, linkID int64) (int64, error) {
+	result, err := db.Exec("DELETE FROM links WHERE id = ?", linkID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 func GetLinkByID(db *sql.DB, id int64) (*Link, error) {
@@ -83,9 +86,9 @@ func UpdateLink(db *sql.DB, linkID int64, shortCode, originalURL string) error {
 	return err
 }
 
-func DeleteLinks(db *sql.DB, ids []int64) error {
+func DeleteLinks(db *sql.DB, ids []int64) (int64, error) {
 	if len(ids) == 0 {
-		return nil
+		return 0, nil
 	}
 
 	placeholders := ""
@@ -99,6 +102,9 @@ func DeleteLinks(db *sql.DB, ids []int64) error {
 	}
 
 	query := "DELETE FROM links WHERE id IN (" + placeholders + ")"
-	_, err := db.Exec(query, args...)
-	return err
+	result, err := db.Exec(query, args...)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

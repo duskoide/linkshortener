@@ -3,7 +3,6 @@ package handlers
 import (
 	"database/sql"
 	"net/http"
-	"strings"
 
 	"linkshortener/internal/auth"
 	"linkshortener/internal/db"
@@ -22,36 +21,15 @@ func CreatePost(database *sql.DB) http.HandlerFunc {
 		}
 
 		url := r.FormValue("url")
-		customCode := r.FormValue("custom_code")
-
-		shortCode := customCode
+		shortCode := r.FormValue("custom_code")
 		if shortCode == "" {
 			shortCode = generateShortCode()
 		}
 
-		if len(shortCode) < 3 || len(shortCode) > 20 {
+		shortCode, url, err := validateLinkInput(shortCode, url)
+		if err != nil {
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
-			renderTemplate(w, "create.html", map[string]any{
-				"Error": "Short code must be 3-20 characters",
-			})
-			return
-		}
-
-		for _, c := range shortCode {
-			if !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
-				w.Header().Set("Content-Type", "text/html; charset=utf-8")
-				renderTemplate(w, "create.html", map[string]any{
-					"Error": "Short code must be alphanumeric",
-				})
-				return
-			}
-		}
-
-		if !strings.HasPrefix(url, "http://") && !strings.HasPrefix(url, "https://") {
-			w.Header().Set("Content-Type", "text/html; charset=utf-8")
-			renderTemplate(w, "create.html", map[string]any{
-				"Error": "URL must start with http:// or https://",
-			})
+			renderTemplate(w, "create.html", map[string]any{"Error": err.Error()})
 			return
 		}
 

@@ -4,8 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"net/http"
-	"net/url"
-	"regexp"
 	"strconv"
 	"strings"
 
@@ -13,8 +11,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 )
-
-var shortCodePattern = regexp.MustCompile(`^[a-zA-Z0-9_-]+$`)
 
 type editRequest struct {
 	ShortCode   string `json:"short_code"`
@@ -36,21 +32,11 @@ func APIEditLink(database *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		req.ShortCode = strings.TrimSpace(req.ShortCode)
-		req.OriginalURL = strings.TrimSpace(req.OriginalURL)
-
-		if req.ShortCode == "" || len(req.ShortCode) > 64 || !shortCodePattern.MatchString(req.ShortCode) {
+		req.ShortCode, req.OriginalURL, err = validateLinkInput(req.ShortCode, req.OriginalURL)
+		if err != nil {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(`{"error":"Short code must be 1-64 chars, alphanumeric/underscore/hyphen only"}`))
-			return
-		}
-
-		parsedURL, err := url.Parse(req.OriginalURL)
-		if err != nil || parsedURL.Scheme == "" || (parsedURL.Scheme != "http" && parsedURL.Scheme != "https") || parsedURL.Host == "" {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(`{"error":"URL must be a valid http(s) URL"}`))
+			json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
 			return
 		}
 

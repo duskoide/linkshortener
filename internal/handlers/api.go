@@ -33,12 +33,17 @@ func APIDeleteLink(database *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		if err := db.DeleteLink(database, id); err != nil {
+		deleted, err := db.DeleteLink(database, id)
+		if err != nil {
 			http.Error(w, "Failed to delete", http.StatusInternalServerError)
 			return
 		}
+		if deleted == 0 {
+			http.Error(w, "Link not found", http.StatusNotFound)
+			return
+		}
 
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusNoContent)
 	}
 }
 
@@ -64,13 +69,13 @@ func APIBulkDeleteLink(database *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		if err := db.DeleteLinks(database, req.IDs); err != nil {
+		deleted, err := db.DeleteLinks(database, req.IDs)
+		if err != nil {
 			http.Error(w, `{"error":"Failed to delete"}`, http.StatusInternalServerError)
 			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"deleted":` + strconv.FormatInt(int64(len(req.IDs)), 10) + `}`))
+		json.NewEncoder(w).Encode(map[string]int64{"deleted": deleted})
 	}
 }
